@@ -10,7 +10,6 @@ interface Task<T = any> {
   subscribers: Set<WebSocket>
 }
 
-
 class TaskManager<T = any> {
   private tasks: Map<string, Task<T>> = new Map()
 
@@ -24,11 +23,9 @@ class TaskManager<T = any> {
 
   subscribeToTask(taskId: string, ws: WebSocket): boolean {
     const task = this.tasks.get(taskId)
-    console.log("THE TASK (before subscribe):", task)
     if (!task) return false
 
     task.subscribers.add(ws)
-    console.log("THE TASK (after subscribe):", task)
     return true
   }
 
@@ -38,8 +35,6 @@ class TaskManager<T = any> {
 
     task.status = "completed"
     task.result = result
-
-    console.log("THE TASK:", task)
 
     // Notify all subscribers
     for (const subscriber of task.subscribers) {

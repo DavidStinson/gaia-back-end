@@ -1,3 +1,6 @@
+// node
+import { randomUUID } from "node:crypto"
+
 // types
 import type { Request, Response } from "express"
 import { moduleDataSchema } from "../../zod/v1/module-outline.js"
@@ -7,6 +10,8 @@ import * as docs from "../../docs/index.js"
 
 // helpers
 import { tryCatch } from "../../helpers/try-catch.js"
+import { taskManagers } from "../../helpers/task-manager.js"
+import type { Module } from "../../types.js"
 
 // module constants
 const crewAPI = process.env.CREW_API
@@ -79,7 +84,11 @@ async function generateCrewModule(req: Request, res: Response) {
     })
   }
 
-  console.log("Crew response:", initialCrewResponse)
+  const taskId = randomUUID()
+
+  res.status(200).json({ taskId })
+
+  taskManagers.module.createTask(taskId)
 
   const crewResponseId = initialCrewResponse.kickoff_id
   let isCrewComplete = false
@@ -148,12 +157,12 @@ async function generateCrewModule(req: Request, res: Response) {
 
   console.log("Final output:", finalOutput)
 
-  const fixedOutput = {
+  const fixedOutput: Module = {
     title: finalOutput.title,
     about: finalOutput.about,
     learnerPersona: finalOutput.learner_persona,
-    learningObjectives: finalOutput.learning_objectives,
     prerequisites: finalOutput.prerequisites,
+    tools: finalOutput.tools,
     microlessons: [],
   }
 
@@ -168,6 +177,8 @@ async function generateCrewModule(req: Request, res: Response) {
       ledResponse: microlesson.led_response,
     }),
   )
+
+  taskManagers.module.completeTask(taskId, fixedOutput)
 
   res.status(200).json(fixedOutput)
   return

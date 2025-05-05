@@ -9,12 +9,10 @@ import { moduleOutlineSchema } from "../../zod/v1/module-outline.js"
 
 // helpers
 import { tryCatch } from "../../helpers/try-catch.js"
+import { taskManagers } from "../../helpers/task-manager.js"
 
 // services
 import * as moduleAiService from "../../services-ai/v1/module.js"
-
-// websocket
-import { taskManagers } from "../../ws-server.js"
 
 // controllers
 async function generateModule(req: Request, res: Response) {
