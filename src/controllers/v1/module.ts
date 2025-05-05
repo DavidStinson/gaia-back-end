@@ -1,11 +1,20 @@
+// node
+import { randomUUID } from "node:crypto"
+
 // types
 import type { Request, Response } from "express"
+
+// zod
+import { moduleOutlineSchema } from "../../zod/v1/module-outline.js"
+
+// helpers
+import { tryCatch } from "../../helpers/try-catch.js"
 
 // services
 import * as moduleAiService from "../../services-ai/v1/module.js"
 
-// zod
-import { moduleOutlineSchema } from "../../zod/v1/module-outline.js"
+// websocket
+import { taskManagers } from "../../ws-server.js"
 
 // controllers
 async function generateModule(req: Request, res: Response) {
@@ -15,11 +24,22 @@ async function generateModule(req: Request, res: Response) {
     return void res.status(400).json({ error: error.message })
   }
 
-  const aiModule = await moduleAiService.generate(req.body)
+  const taskId = randomUUID()
 
-  console.log(aiModule)
+  res.status(200).json({ taskId })
 
-  return void res.status(200).json(aiModule)
+  taskManagers.module.createTask(taskId)
+
+  const [module, moduleError] = await tryCatch(
+    moduleAiService.generate(req.body)
+  )
+
+  if (moduleError) {
+    taskManagers.moduleOutline.failTask(taskId, moduleError.message)
+    return
+  }
+
+  taskManagers.module.completeTask(taskId, module)
 }
 
 export { generateModule }

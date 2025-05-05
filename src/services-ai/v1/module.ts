@@ -14,31 +14,23 @@ import {
 import { tryCatch } from "../../helpers/try-catch.js"
 
 // types
-interface Microlesson {
-  title: string
-  id: number
-  minutes: number
-  learningObjective: string
-  outline: string[]
-  smeResponse?: string
-  ledResponse?: string
-}
-
-interface ModuleOutline {
-  title: string
-  about: string
-  tools: string[]
-  learnerPersona: string
-  prerequisites: string[]
-  microlessons: Microlesson[]
-}
+import type { ModuleOutline, Module } from "../../types.js"
 
 // ai services
-async function generate(reqData: ModuleOutline) {
+async function generate(reqData: ModuleOutline): Promise<Module> {
   let smePreviousMicrolessonContent = ""
   let ledPreviousMicrolessonContent = ""
 
-  for await (const microlesson of reqData.microlessons) {
+  const module: Module = {
+    ...reqData,
+    microlessons: reqData.microlessons.map((microlesson) => ({
+      ...microlesson,
+      smeResponse: "",
+      ledResponse: "",
+    })),
+  }
+
+  for await (const microlesson of module.microlessons) {
     const [smePrompt, templateError] = await tryCatch(
       smePromptTemplate.invoke({
         ...reqData,
@@ -108,7 +100,7 @@ async function generate(reqData: ModuleOutline) {
     microlesson.ledResponse = ledResponse.content.toString()
   }
 
-  return reqData
+  return module
 }
 
 export { generate }

@@ -87,8 +87,6 @@ const generate = async (reqData: ModuleOutlineReqData) => {
   //   chain.invoke({ ...reqData, gaLearningPhilosophy }),
   // )
 
-  console.log(qaResponse)
-
   return qaResponse
 }
 
