@@ -25,22 +25,27 @@ async function generateCrewModule(req: Request, res: Response) {
     return void res.status(400).json({ error: error.message })
   }
 
+  console.log(req.body);
+  
   const crewPayload = {
     inputs: {
-      module_title: req.body.title,
-      module_topic: req.body.about,
-      module_minutes: req.body.minutes,
-      learner_persona: req.body.learnerPersona,
-      learning_objectives: req.body.learningObjectives,
+      prerequisites: [],
+      microlessons: [],
       tools: req.body.tools,
-      final_format: req.body.finalFormat,
-      doc_ga_learning_philosophy: docs.gaLearningPhilosophy,
       doc_technical_voice: docs.technicalVoice,
+      module_topic: req.body.about,
+      doc_writing_modularly: docs.writingModularly,
+      final_format: "markdown",
+      module_minutes: req.body.minutes,
       doc_ga_inclusivity_guidelines: docs.gaInclusivityGuidelines,
       doc_crafting_modular_code: docs.craftingModularCode,
-      doc_markdown_document_structure: docs.markdownDocumentStructure,
-      doc_writing_modularly: docs.writingModularly,
       doc_exercise_instruction_guidelines: docs.exerciseInstructionGuidelines,
+      doc_markdown_document_structure: docs.markdownDocumentStructure,
+      learner_persona: req.body.learnerPersona,
+      module_title: req.body.title,
+      doc_ga_learning_philosophy: docs.gaLearningPhilosophy,
+      learning_objectives: req.body.learningObjectives,
+      microlessons_text: ""
     },
     flowFinishWebhookUrl: "",
   }
@@ -52,12 +57,12 @@ async function generateCrewModule(req: Request, res: Response) {
         Authorization: `Bearer ${crewToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ input: crewPayload }),
+      body: JSON.stringify(crewPayload),
     }),
   )
 
   if (kickOffError) {
-    console.error("Error contacting Crew AI during kickoff:", error)
+    console.error("Error contacting Crew AI during kickoff:", kickOffError)
     return void res.status(500).json({
       message: "Error contacting Crew AI system during kickoff.",
     })
@@ -86,9 +91,9 @@ async function generateCrewModule(req: Request, res: Response) {
 
   const taskId = randomUUID()
 
-  res.status(200).json({ taskId })
-
   taskManagers.module.createTask(taskId)
+
+  res.status(200).json({ taskId })
 
   const crewResponseId = initialCrewResponse.kickoff_id
   let isCrewComplete = false
@@ -108,7 +113,7 @@ async function generateCrewModule(req: Request, res: Response) {
     )
 
     if (crewResponseError) {
-      console.error("Error contacting Crew AI:", error)
+      console.error("Error contacting Crew AI:", crewResponseError)
       return void res.status(500).json({
         success: false,
         message: "Error contacting Crew AI system after kickoff.",
@@ -171,7 +176,7 @@ async function generateCrewModule(req: Request, res: Response) {
       id: microlesson.id,
       title: microlesson.title,
       learningObjective: microlesson.learning_objective,
-      minutes: microlesson.time,
+      minutes: microlesson.minutes,
       outline: microlesson.outline,
       smeResponse: microlesson.sme_response,
       ledResponse: microlesson.led_response,
@@ -179,8 +184,6 @@ async function generateCrewModule(req: Request, res: Response) {
   )
 
   taskManagers.module.completeTask(taskId, fixedOutput)
-
-  res.status(200).json(fixedOutput)
   return
 }
 
