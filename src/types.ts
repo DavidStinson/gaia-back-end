@@ -28,7 +28,7 @@ interface Module {
   microlessons: {
     title: string
     minutes: number
-    learningObjective: string 
+    learningObjective: string
     outline: string[]
     smeResponse: string
     ledResponse: string

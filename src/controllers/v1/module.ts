@@ -29,7 +29,7 @@ async function generateModule(req: Request, res: Response) {
   taskManagers.module.createTask(taskId)
 
   const [module, moduleError] = await tryCatch(
-    moduleAiService.generate(req.body)
+    moduleAiService.generate(req.body),
   )
 
   if (moduleError) {

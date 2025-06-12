@@ -25,8 +25,8 @@ async function generateCrewModule(req: Request, res: Response) {
     return void res.status(400).json({ error: error.message })
   }
 
-  console.log(req.body);
-  
+  console.log(req.body)
+
   const crewPayload = {
     inputs: {
       prerequisites: [],
@@ -45,7 +45,7 @@ async function generateCrewModule(req: Request, res: Response) {
       module_title: req.body.title,
       doc_ga_learning_philosophy: docs.gaLearningPhilosophy,
       learning_objectives: req.body.learningObjectives,
-      microlessons_text: ""
+      microlessons_text: "",
     },
     flowFinishWebhookUrl: "",
   }

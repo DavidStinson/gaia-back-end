@@ -1,6 +1,6 @@
-import { z } from 'zod'
+import { z } from "zod"
 
-import type { TypeOf } from 'zod'
+import type { TypeOf } from "zod"
 
 const envSchema = z.object({
   PORT: z.coerce.number(),
@@ -20,9 +20,9 @@ function validateEnv() {
     if (error instanceof z.ZodError) {
       const { fieldErrors } = error.flatten()
       const errorMessages = Object.entries(fieldErrors)
-        .map(([field, errs]) => errs ? `${field}: ${errs.join(', ')}` : field)
-        .join('\n')
-      console.error('Missing environment variables:\n' + errorMessages)
+        .map(([field, errs]) => (errs ? `${field}: ${errs.join(", ")}` : field))
+        .join("\n")
+      console.error("Missing environment variables:\n" + errorMessages)
       process.exit(1)
     }
   }

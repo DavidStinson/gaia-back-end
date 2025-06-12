@@ -37,7 +37,6 @@
     "@types/node": "^22.15.3",
     "@types/ws": "^8.18.1",
     "prettier": "^3.5.3",
-    "prisma": "^6.7.0",
     "tsc-watch": "^6.2.1",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"

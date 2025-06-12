@@ -6,8 +6,6 @@ import { taskManagers } from "./helpers/task-manager.js"
 import { tryCatch } from "./helpers/try-catch.js"
 
 // types
-
-
 interface WsTask {
   taskId: string
   taskType: string
@@ -59,9 +57,8 @@ function wsConnection(ws: CustomWebSocket) {
       return
     }
 
-
     const taskManager = taskManagers[taskType as keyof typeof taskManagers]
-    
+
     if (!taskManager) {
       ws.send(
         JSON.stringify({
@@ -95,15 +92,12 @@ function wsConnection(ws: CustomWebSocket) {
     ws.isAlive = true
   })
 
-  const interval = setInterval(
-    () => {
-      if (!ws.isAlive) return ws.terminate()
-      ws.isAlive = false
-      ws.ping()
-    },
-    20000,
-  )
-  
+  const interval = setInterval(() => {
+    if (!ws.isAlive) return ws.terminate()
+    ws.isAlive = false
+    ws.ping()
+  }, 20000)
+
   ws.on("close", () => {
     ws.isAlive = false
     clearInterval(interval)

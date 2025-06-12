@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod"
 
 const moduleDataSchema = z.object({
   title: z.string(),

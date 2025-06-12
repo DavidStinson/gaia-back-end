@@ -1,5 +1,5 @@
 // npm
-import { ChatPromptTemplate } from '@langchain/core/prompts'
+import { ChatPromptTemplate } from "@langchain/core/prompts"
 
 // prompts
 const generateSystemPrompt = `
